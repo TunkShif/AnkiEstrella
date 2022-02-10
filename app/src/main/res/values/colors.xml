@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#FF111827</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="anki_blue_50">#FF42C4FF</color>
+    <color name="anki_blue_100">#FF42C4FF</color>
+    <color name="anki_blue_200">#FF049AE5</color>
+
+    <color name="blue_400">#FF60A5FA</color>
+    <color name="blue_500">#FF3B82F6</color>
+    <color name="blue_600">#FF2563EB</color>
+    <color name="blue_700">#FF1D4ED8</color>
+    <color name="teal_200">#FF99F6E4</color>
+    <color name="teal_300">#FF5EEAD4</color>
+    <color name="teal_400">#FF2DD4BF</color>
+    <color name="teal_500">#FF14B8A6</color>
+    <color name="teal_600">#FF0D9488</color>
+
+    <color name="transparent">#00000000</color>
+</resources>
