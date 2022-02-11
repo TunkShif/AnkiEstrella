@@ -1,17 +1,16 @@
 package one.tunkshif.ankiestrella.util
 
 import androidx.room.TypeConverter
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 object TypeConverter {
-    private val gson = Gson()
+    private val mapper = ObjectMapper().registerKotlinModule()
 
     @TypeConverter
-    fun stringToMap(value: String): Map<String, String> =
-        gson.fromJson(value, object : TypeToken<Map<String, String>>() {}.type)
+    fun stringToMap(value: String): Map<String, String> = mapper.readValue(value)
 
     @TypeConverter
-    fun mapToString(value: Map<String, String>): String =
-        gson.toJson(value)
+    fun mapToString(value: Map<String, String>): String = mapper.writeValueAsString(value)
 }

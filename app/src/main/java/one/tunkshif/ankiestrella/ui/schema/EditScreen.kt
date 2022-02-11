@@ -45,7 +45,8 @@ fun EditScreen(
             FloatingActionButton(
                 backgroundColor = AnkiBlue200,
                 contentColor = White.copy(alpha = 0.95f),
-                onClick = { /*TODO*/ }) {
+                onClick = viewModel::onSave
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check_outline),
                     contentDescription = "finish"
@@ -63,7 +64,9 @@ fun EditScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 SchemaEditSection(viewModel = viewModel)
-                FieldMappingSection()
+                if (viewModel.schema.model.isNotEmpty()) {
+                    FieldMappingSection(viewModel = viewModel)
+                }
             }
         }
     }
@@ -140,10 +143,9 @@ fun SchemaEditSection(viewModel: EditSchemaViewModel) {
 }
 
 @Composable
-fun FieldMappingSection() {
-    var text by remember {
-        mutableStateOf("")
-    }
+fun FieldMappingSection(
+    viewModel: EditSchemaViewModel
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Dimension.small)
@@ -154,38 +156,39 @@ fun FieldMappingSection() {
             modifier = Modifier.fillMaxWidth()
         ) {
             val style =
-                TextStyle(fontSize = 16.sp, fontFamily = fontOutfit, fontWeight = FontWeight.Medium)
+                TextStyle(fontSize = 18.sp, fontFamily = fontOutfit, fontWeight = FontWeight.Medium)
 
-            Text(text = "SOURCE", style = style, modifier = Modifier.weight(3f))
-            Spacer(modifier = Modifier.weight(1f))
             Text(text = "FIELD", style = style, modifier = Modifier.weight(3f))
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "SOURCE", style = style, modifier = Modifier.weight(3f))
         }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(Dimension.extraSmall)
         ) {
-            items(10) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AutoCompleteTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        items = listOf("A", "B", "C"),
-                        shape = Rounded.large,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_narrow_right_outline),
-                        contentDescription = "right arrow",
-                        modifier = Modifier.weight(1f)
-                    )
-                    AutoCompleteTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        items = listOf("a", "b", "c"),
-                        shape = Rounded.large,
-                        modifier = Modifier.weight(2f)
-                    )
+            viewModel.modelFields.forEach { modelField ->
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = modelField,
+                            fontSize = 16.sp,
+                            fontFamily = fontOutfit,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_narrow_right_outline),
+                            contentDescription = "right arrow",
+                            modifier = Modifier.weight(1f)
+                        )
+                        AutoCompleteTextField(
+                            value = viewModel.fieldMapping[modelField] ?: "",
+                            onValueChange = { viewModel.onFieldMappingChange(modelField, it) },
+                            items = viewModel.sourceFields.map { it.toString() },
+                            shape = Rounded.large,
+                            modifier = Modifier.weight(3f)
+                        )
+                    }
                 }
             }
         }
