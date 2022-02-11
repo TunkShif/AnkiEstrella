@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.runCatching
 import com.ichi2.anki.api.AddContentApi
 import com.ichi2.anki.api.AddContentApi.READ_WRITE_PERMISSION
 import one.tunkshif.ankiestrella.AnkiEstrella

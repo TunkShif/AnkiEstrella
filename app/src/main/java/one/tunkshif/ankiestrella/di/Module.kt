@@ -6,15 +6,21 @@ import one.tunkshif.ankiestrella.data.AppDatabase
 import one.tunkshif.ankiestrella.data.repository.SchemaRepository
 import one.tunkshif.ankiestrella.data.service.SpanishDictService
 import one.tunkshif.ankiestrella.data.service.YoudaoCollinsService
+import one.tunkshif.ankiestrella.ui.schema.EditSchemaViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
+    viewModel { EditSchemaViewModel() }
 }
 
 val dbModule = module {
-    single { Room.databaseBuilder(AnkiEstrella.context, AppDatabase::class.java, "anki_estrella.db").build() }
+    single {
+        Room.databaseBuilder(AnkiEstrella.context, AppDatabase::class.java, "anki_estrella.db")
+            .build()
+    }
 
     single { get<AppDatabase>().schemaDao() }
 

@@ -12,6 +12,7 @@ import one.tunkshif.ankiestrella.di.serviceModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class AnkiEstrella : Application() {
 
@@ -19,13 +20,13 @@ class AnkiEstrella : Application() {
         super.onCreate()
         context = applicationContext
 
-//        configureKoin()
-//        registerSources()
+        configureKoin()
+        registerSources()
     }
 
     private fun configureKoin() {
         startKoin {
-            androidLogger()
+            androidLogger(Level.ERROR)
             androidContext(this@AnkiEstrella)
             modules(appModule, dbModule, serviceModule)
         }
