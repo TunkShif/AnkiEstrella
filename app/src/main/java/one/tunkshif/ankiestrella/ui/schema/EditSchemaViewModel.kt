@@ -1,61 +1,47 @@
 package one.tunkshif.ankiestrella.ui.schema
 
-import android.util.Log
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.data.SourceRegistry
-import one.tunkshif.ankiestrella.data.model.Field
-import one.tunkshif.ankiestrella.data.model.Schema
-import one.tunkshif.ankiestrella.util.AnkiDroidHelper
-import one.tunkshif.ankiestrella.util.LOG_TAG
+import one.tunkshif.ankiestrella.data.repository.SchemaRepository
 
-class EditSchemaViewModel : ViewModel() {
-    var schema by mutableStateOf(Schema())
-        private set
+class EditSchemaViewModel(
+    private val schemaRepository: SchemaRepository
+) : ViewModel() {
+    val uiState = EditUiState()
+    val inputState = EditInputState()
 
-    val sourceFields = mutableStateListOf<Field>()
-    val modelFields = mutableStateListOf<String>()
-    val fieldMapping = mutableStateMapOf<String, String>()
-
-    private var sourceId = ""
-
-    val decks = AnkiDroidHelper.getAllDecks()
-    val models = AnkiDroidHelper.getAllModels()
-    val sources = SourceRegistry.all().map { it.name }
-
-    fun onSchemaNameChange(name: String) {
-        schema = schema.copy(name = name)
+    suspend fun hasConflict(): Boolean {
+        var hasConflict = false
+        val name = inputState.schemaNameState.text
+        val schema = viewModelScope.async {
+            schemaRepository.getOne(name)
+        }
+        schema.await()?.let { hasConflict = true }
+        uiState.hasConflict = hasConflict
+        return hasConflict
     }
 
-    fun onDeckNameChange(name: String) {
-        schema = schema.copy(deck = name)
-    }
-
-    fun onSourceNameChange(name: String) {
-        schema = schema.copy(source = name)
-        // TODO: Error handling
-        val source = SourceRegistry.getByName(name)
-        sourceId = source?.id ?: sourceId
-        sourceFields.clear()
-        source?.availableFields?.let { sourceFields.addAll(it) }
-    }
-
-    fun onModelNameChange(name: String) {
-        schema = schema.copy(model = name)
-        // TODO: Error handling
-        modelFields.clear()
-        AnkiDroidHelper.getModelFields(name)?.let { modelFields.addAll(it) }
-        fieldMapping.apply {
-            clear()
-            putAll(modelFields.associateWith { "" })
+    fun save() {
+        val schema = inputState.toSchema()
+        viewModelScope.launch {
+            schemaRepository.save(schema)
         }
     }
 
-    fun onFieldMappingChange(modelField: String, sourceField: String) {
-        fieldMapping[modelField] = sourceField
-    }
-
-    fun onSave() {
-        Log.d(LOG_TAG, fieldMapping.toMap().toString())
+    fun update() {
+        // TODO: Error handling
+        viewModelScope.launch {
+            val name = inputState.schemaNameState.text
+            val schema = schemaRepository.getOne(name)
+            schema?.copy(
+                source = SourceRegistry.getByName(inputState.sourceName)?.id ?: "unknown",
+                deck = inputState.deckName,
+                model = inputState.modelName,
+                fieldMapping = inputState.fieldMapping.toMap()
+            )?.let { schemaRepository.update(it) }
+        }
     }
 }

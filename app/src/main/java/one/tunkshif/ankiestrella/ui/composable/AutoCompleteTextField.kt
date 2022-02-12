@@ -19,7 +19,7 @@ import one.tunkshif.ankiestrella.R
 @Composable
 fun AutoCompleteTextField(
     value: String,
-    onValueChange: (String) -> Unit,
+    onItemSelected: (String) -> Unit,
     items: List<String>,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
@@ -39,7 +39,7 @@ fun AutoCompleteTextField(
     ) {
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = onItemSelected,
             enabled = false,
             singleLine = true,
             label = label,
@@ -77,7 +77,7 @@ fun AutoCompleteTextField(
             items.forEachIndexed { index, item ->
                 DropdownMenuItem(
                     onClick = {
-                        onValueChange(items[index])
+                        onItemSelected(items[index])
                         expanded = false
                     }) {
                     Text(text = item)

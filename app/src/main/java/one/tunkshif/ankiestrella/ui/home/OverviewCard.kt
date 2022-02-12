@@ -1,5 +1,6 @@
 package one.tunkshif.ankiestrella.ui.home
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -22,7 +22,7 @@ import one.tunkshif.ankiestrella.ui.theme.*
 
 @Composable
 fun OverviewCard(
-    iconId: Int,
+    @DrawableRes iconId: Int,
     iconDescription: String,
     onClick: () -> Unit,
     name: String,

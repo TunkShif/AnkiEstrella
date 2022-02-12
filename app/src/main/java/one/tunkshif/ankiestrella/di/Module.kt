@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
-    viewModel { EditSchemaViewModel() }
+    viewModel { EditSchemaViewModel(get()) }
 }
 
 val dbModule = module {

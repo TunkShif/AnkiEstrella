@@ -1,5 +1,6 @@
 package one.tunkshif.ankiestrella.ui.popup
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -102,7 +103,7 @@ fun HeaderSection() {
 @Composable
 fun ActionButton(
     name: String,
-    iconId: Int,
+    @DrawableRes iconId: Int,
     onClick: () -> Unit
 ) {
     Box(
