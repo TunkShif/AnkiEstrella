@@ -12,6 +12,9 @@ interface SchemaDao {
     @Query("SELECT * FROM schemas WHERE name = :name")
     suspend fun getOne(name: String): Schema?
 
+    @Query("SELECT * FROM schemas WHERE id = :id")
+    suspend fun getOne(id: Int): Schema?
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(schema: Schema)
 

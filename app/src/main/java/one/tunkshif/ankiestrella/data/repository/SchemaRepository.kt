@@ -10,6 +10,9 @@ class SchemaRepository(private val schemaDao: SchemaDao) {
     suspend fun getOne(name: String) =
         schemaDao.getOne(name)
 
+    suspend fun getOne(id: Int) =
+        schemaDao.getOne(id)
+
     suspend fun save(schema: Schema) {
         schemaDao.insert(schema)
     }
