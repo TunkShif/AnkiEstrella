@@ -15,19 +15,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.annotation.Destination
 import one.tunkshif.ankiestrella.R
 import one.tunkshif.ankiestrella.data.model.Schema
+import one.tunkshif.ankiestrella.ui.navigation.BottomScaffold
 import one.tunkshif.ankiestrella.ui.theme.*
+import org.koin.androidx.compose.inject
 
+@Destination(start = true)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(
+    navController: NavController
+) {
+    val viewModel: HomeViewModel by inject()
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiStateLive = remember(viewModel.uiState, lifecycleOwner) {
         viewModel.uiState.flowWithLifecycle(lifecycleOwner.lifecycle)
     }
-    val uiState by uiStateLive.collectAsState(initial = HomeUiState.Empty)
 
-    Scaffold(
+    val uiState by uiStateLive.collectAsState(initial = HomeUiState.Loaded())
+
+    BottomScaffold(
+        navController = navController,
         topBar = { HomeScreenTopAppBar() },
         floatingActionButton = { HomeScreenFloatingActionButton() }
     ) {

@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -25,23 +22,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.R
 import one.tunkshif.ankiestrella.data.dao.SchemaDao
+import one.tunkshif.ankiestrella.ui.NavGraphs
 import one.tunkshif.ankiestrella.ui.composable.AutoCompleteTextField
 import one.tunkshif.ankiestrella.ui.composable.TextFieldState
 import one.tunkshif.ankiestrella.ui.theme.*
 import one.tunkshif.ankiestrella.util.TAG
 import org.koin.androidx.compose.inject
 
+@Destination
 @Composable
-fun EditScreen(
-    viewModel: EditorViewModel
-) {
+fun EditorScreen() {
+    val viewModel: EditorViewModel by inject()
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
     val formState = remember { viewModel.formState }
 
     val onSave: () -> Unit = {
@@ -61,10 +60,10 @@ fun EditScreen(
     }
 
     Scaffold(
-        topBar = { EditScreenTopAppBar() },
-        floatingActionButton = { EditScreenFloatingActionButton(onClick = onSave) }
+        topBar = { EditorScreenTopAppBar() },
+        floatingActionButton = { EditorScreenFloatingActionButton(onClick = onSave) }
     ) {
-        EditScreenContent(formState = formState)
+        EditorScreenContent(formState = formState)
         if (formState.hasConflict) {
             OnSaveAlertDialog(
                 schemaName = formState.schemaName.text,
@@ -77,7 +76,7 @@ fun EditScreen(
 }
 
 @Composable
-fun EditScreenTopAppBar() {
+fun EditorScreenTopAppBar() {
     TopAppBar(
         title = { Text(text = "Edit Schema") },
         navigationIcon = {
@@ -100,7 +99,7 @@ fun EditScreenTopAppBar() {
 }
 
 @Composable
-fun EditScreenFloatingActionButton(
+fun EditorScreenFloatingActionButton(
     onClick: () -> Unit
 ) {
     FloatingActionButton(
@@ -116,7 +115,7 @@ fun EditScreenFloatingActionButton(
 }
 
 @Composable
-fun EditScreenContent(
+fun EditorScreenContent(
     formState: EditorFormState
 ) {
     val focusManager = LocalFocusManager.current
@@ -406,8 +405,7 @@ fun OnSaveAlertDialog(
 
 @Preview
 @Composable
-fun EditScreenPreview() {
-    val editSchemaViewModel: EditorViewModel by inject()
+fun EditorScreenPreview() {
     val schemaDao: SchemaDao by inject()
     val scope = rememberCoroutineScope()
     SideEffect {
@@ -416,6 +414,6 @@ fun EditScreenPreview() {
         }
     }
     AnkiEstrellaTheme {
-        EditScreen(editSchemaViewModel)
+        EditorScreen()
     }
 }

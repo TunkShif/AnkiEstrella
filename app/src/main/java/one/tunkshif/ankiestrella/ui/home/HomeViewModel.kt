@@ -14,7 +14,7 @@ class HomeViewModel(
     private val schemaRepository: SchemaRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Empty)
+    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loaded())
     val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
