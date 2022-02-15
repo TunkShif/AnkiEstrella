@@ -5,12 +5,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.os.Environment
 import android.provider.BaseColumns
-import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import one.tunkshif.ankiestrella.data.model.Definition
-import one.tunkshif.ankiestrella.data.model.Word
-import java.io.IOException
 
 class DictDbHelper(context: Context, name: String) :
     SQLiteOpenHelper(context, name, null, DATABASE_VERSION) {
@@ -19,7 +13,11 @@ class DictDbHelper(context: Context, name: String) :
         context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath
 
     private val database =
-        SQLiteDatabase.openDatabase("$databaseFolderPath/$name.db", null, SQLiteDatabase.OPEN_READONLY)
+        SQLiteDatabase.openDatabase(
+            "$databaseFolderPath/$name.db",
+            null,
+            SQLiteDatabase.OPEN_READONLY
+        )
 
     override fun onCreate(db: SQLiteDatabase?) {}
 

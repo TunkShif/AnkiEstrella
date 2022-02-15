@@ -1,12 +1,12 @@
 package one.tunkshif.ankiestrella.data.source
 
 import androidx.compose.runtime.Composable
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import one.tunkshif.ankiestrella.AnkiEstrella
 import one.tunkshif.ankiestrella.api.DictSource
 import one.tunkshif.ankiestrella.data.DictDbHelper
-import one.tunkshif.ankiestrella.data.model.Definition
 import one.tunkshif.ankiestrella.data.model.Field
 import one.tunkshif.ankiestrella.data.model.Field.*
 import one.tunkshif.ankiestrella.data.model.Word
@@ -20,12 +20,13 @@ object CollinsEnCn : DictSource {
     override suspend fun query(text: String): Word? {
         val db = DictDbHelper(AnkiEstrella.context, id)
         val result = db.query(text)
+        val mapper = ObjectMapper().registerKotlinModule()
         return Word(
             query = text,
             word = result[0],
             phonetics = result[1],
             audioUrl = "TODO",
-            definitions = Gson().fromJson(result[2], object : TypeToken<List<Definition>>() {}.type)
+            definitions = mapper.readValue(result[2])
         )
     }
 

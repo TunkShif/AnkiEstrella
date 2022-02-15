@@ -80,7 +80,7 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-jackson:$retrofit_version"
 
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
 

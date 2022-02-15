@@ -7,14 +7,14 @@ import one.tunkshif.ankiestrella.data.repository.SchemaRepository
 import one.tunkshif.ankiestrella.data.service.SpanishDictService
 import one.tunkshif.ankiestrella.data.service.YoudaoCollinsService
 import one.tunkshif.ankiestrella.ui.home.HomeViewModel
-import one.tunkshif.ankiestrella.ui.schema.EditSchemaViewModel
+import one.tunkshif.ankiestrella.ui.editor.EditorViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
 
 val appModule = module {
-    viewModel { EditSchemaViewModel(get()) }
+    viewModel { EditorViewModel(get()) }
     viewModel { HomeViewModel(get()) }
 }
 
@@ -33,7 +33,7 @@ val serviceModule = module {
     fun provideHttpClient() =
         Retrofit.Builder()
             .baseUrl("https://dictlet.herokuapp.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create())
             .build()
 
     single { provideHttpClient() }

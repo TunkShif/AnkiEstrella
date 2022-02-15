@@ -1,4 +1,4 @@
-package one.tunkshif.ankiestrella.ui.schema
+package one.tunkshif.ankiestrella.ui.editor
 
 import android.util.Log
 import android.widget.Toast
@@ -37,18 +37,17 @@ import org.koin.androidx.compose.inject
 
 @Composable
 fun EditScreen(
-    viewModel: EditSchemaViewModel
+    viewModel: EditorViewModel
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val uiState = remember { viewModel.uiState }
-    val inputState = remember { viewModel.inputState }
+    val formState = remember { viewModel.formState }
 
     val onSave: () -> Unit = {
         coroutineScope.launch {
             when {
-                !inputState.isValid -> {
+                !formState.isValid -> {
                     Toast.makeText(context, "Please fill in required fields.", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -65,19 +64,13 @@ fun EditScreen(
         topBar = { EditScreenTopAppBar() },
         floatingActionButton = { EditScreenFloatingActionButton(onClick = onSave) }
     ) {
-        EditScreenContent(
-            uiState = uiState,
-            inputState = inputState,
-        )
-        if (uiState.hasConflict) {
+        EditScreenContent(formState = formState)
+        if (formState.hasConflict) {
             OnSaveAlertDialog(
-                schemaName = inputState.schemaNameState.text,
-                onDismiss = { uiState.hasConflict = false },
-                onConfirm = {
-                    viewModel.update()
-                    uiState.hasConflict = false
-                },
-                onCancel = { uiState.hasConflict = false }
+                schemaName = formState.schemaName.text,
+                onDismiss = viewModel::onAlertCancel,
+                onConfirm = viewModel::onAlertConfirm,
+                onCancel = viewModel::onAlertCancel
             )
         }
     }
@@ -124,8 +117,7 @@ fun EditScreenFloatingActionButton(
 
 @Composable
 fun EditScreenContent(
-    uiState: EditUiState,
-    inputState: EditInputState
+    formState: EditorFormState
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -140,29 +132,23 @@ fun EditScreenContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             SchemaEditSection(
-                decks = uiState.decks,
-                sources = uiState.sources,
-                models = uiState.models,
-                schemaNameState = inputState.schemaNameState,
-                deckName = inputState.deckName,
-                sourceName = inputState.sourceName,
-                modelName = inputState.modelName,
-                onDeckSelected = { inputState.deckName = it },
-                onSourceSelected = {
-                    inputState.sourceName = it
-                    uiState.onSourceSelected(it)
-                },
-                onModelSelected = {
-                    inputState.modelName = it
-                    uiState.onModelSelected(it)
-                }
+                decks = formState.deckName.items,
+                sources = formState.sourceName.items,
+                models = formState.modelName.items,
+                schemaName = formState.schemaName,
+                deckName = formState.deckName.selected,
+                sourceName = formState.sourceName.selected,
+                modelName = formState.modelName.selected,
+                onDeckSelected = formState::onDeckSelected,
+                onSourceSelected = formState::onSourceSelected,
+                onModelSelected = formState::onModelSelected
             )
-            if (uiState.isModelSelected) {
+            if (formState.isModelSelected) {
                 FieldMappingSection(
-                    modelFields = uiState.modelFields,
-                    sourceFields = uiState.sourceFields,
-                    fieldMapping = inputState.fieldMapping,
-                    onFieldMappingChange = inputState::onFieldMappingChange
+                    modelFields = formState.modelFields,
+                    sourceFields = formState.sourceFields,
+                    fieldMapping = formState.fieldMapping,
+                    onFieldMappingChange = formState::onFieldMappingChange
                 )
             }
         }
@@ -171,7 +157,7 @@ fun EditScreenContent(
 
 @Composable
 fun SchemaEditSection(
-    schemaNameState: TextFieldState,
+    schemaName: TextFieldState,
     decks: List<String>,
     sources: List<String>,
     models: List<String>,
@@ -189,7 +175,7 @@ fun SchemaEditSection(
         val focusManager = LocalFocusManager.current
 
         SchemaInput(
-            schemaNameState,
+            textState = schemaName,
             onImeAction = { focusManager.clearFocus() }
         )
         DeckSelect(
@@ -421,7 +407,7 @@ fun OnSaveAlertDialog(
 @Preview
 @Composable
 fun EditScreenPreview() {
-    val editSchemaViewModel: EditSchemaViewModel by inject()
+    val editSchemaViewModel: EditorViewModel by inject()
     val schemaDao: SchemaDao by inject()
     val scope = rememberCoroutineScope()
     SideEffect {
