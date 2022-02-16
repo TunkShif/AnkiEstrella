@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import one.tunkshif.ankiestrella.data.SourceRegistry
+import one.tunkshif.ankiestrella.data.model.Schema
 import one.tunkshif.ankiestrella.data.repository.SchemaRepository
 
 class EditorViewModel(
     private val schemaRepository: SchemaRepository
 ) : ViewModel() {
-    val formState = EditorFormState()
+    var formState = EditorFormState()
+        private set
 
     suspend fun hasConflict(): Boolean {
         var hasConflict = false
@@ -29,6 +32,15 @@ class EditorViewModel(
     fun onAlertConfirm() {
         update()
         formState.hasConflict = false
+    }
+
+    fun loadSchema(schema: Schema) {
+        formState.schemaName.text = schema.name
+        formState.onDeckSelected(schema.deck)
+        formState.onSourceSelected(SourceRegistry.getById(schema.source)?.name ?: "")
+        formState.onModelSelected(schema.model)
+        formState.fieldMapping.clear()
+        formState.fieldMapping.putAll(schema.fieldMapping)
     }
 
     fun save() {

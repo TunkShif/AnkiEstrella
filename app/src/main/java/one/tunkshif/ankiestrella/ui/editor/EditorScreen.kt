@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.R
 import one.tunkshif.ankiestrella.data.dao.SchemaDao
+import one.tunkshif.ankiestrella.data.model.Schema
 import one.tunkshif.ankiestrella.ui.NavGraphs
 import one.tunkshif.ankiestrella.ui.composable.AutoCompleteTextField
 import one.tunkshif.ankiestrella.ui.composable.TextFieldState
@@ -34,9 +35,11 @@ import one.tunkshif.ankiestrella.ui.theme.*
 import one.tunkshif.ankiestrella.util.TAG
 import org.koin.androidx.compose.inject
 
-@Destination
+@Destination(route = "editor")
 @Composable
-fun EditorScreen() {
+fun EditorScreen(
+    schema: Schema?
+) {
     val viewModel: EditorViewModel by inject()
 
     val context = LocalContext.current
@@ -56,6 +59,12 @@ fun EditorScreen() {
                         .show()
                 }
             }
+        }
+    }
+
+    LaunchedEffect(schema) {
+        schema?.let {
+            viewModel.loadSchema(it)
         }
     }
 
@@ -414,6 +423,6 @@ fun EditorScreenPreview() {
         }
     }
     AnkiEstrellaTheme {
-        EditorScreen()
+        EditorScreen(null)
     }
 }

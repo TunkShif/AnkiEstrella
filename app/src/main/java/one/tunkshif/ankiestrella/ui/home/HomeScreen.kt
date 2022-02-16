@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -17,16 +14,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import one.tunkshif.ankiestrella.R
 import one.tunkshif.ankiestrella.data.model.Schema
 import one.tunkshif.ankiestrella.ui.navigation.BottomScaffold
 import one.tunkshif.ankiestrella.ui.theme.*
 import org.koin.androidx.compose.inject
 
-@Destination(start = true)
+@Destination(route = "home", start = true)
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    navigator: DestinationsNavigator
 ) {
     val viewModel: HomeViewModel by inject()
 
@@ -34,20 +33,35 @@ fun HomeScreen(
     val uiStateLive = remember(viewModel.uiState, lifecycleOwner) {
         viewModel.uiState.flowWithLifecycle(lifecycleOwner.lifecycle)
     }
+    val navigateToLive = remember(viewModel.navigateTo, lifecycleOwner) {
+        viewModel.navigateTo.flowWithLifecycle(lifecycleOwner.lifecycle)
+    }
 
     val uiState by uiStateLive.collectAsState(initial = HomeUiState.Loaded())
+    val navigateTo by navigateToLive.collectAsState(initial = null)
+
+    LaunchedEffect(navigateTo) {
+        navigateTo?.getIfNotHandled()?.let {
+            navigator.navigate(it)
+        }
+    }
 
     BottomScaffold(
         navController = navController,
         topBar = { HomeScreenTopAppBar() },
-        floatingActionButton = { HomeScreenFloatingActionButton() }
+        floatingActionButton = {
+            HomeScreenFloatingActionButton(
+                onFabClicked = viewModel::onFabClicked
+            )
+        }
     ) {
         // smart cast cannot be performed on delegated value
         when (val state = uiState) {
             is HomeUiState.Loaded -> HomeScreenContent(
                 schemas = state.schemas,
                 deckCount = state.deckCount,
-                dictCount = state.dictCount
+                dictCount = state.dictCount,
+                onEditSchemaClicked = viewModel::onEditSchemaClicked
             )
             is HomeUiState.Empty -> Dummy()
             is HomeUiState.Error -> Dummy()
@@ -72,11 +86,14 @@ fun HomeScreenTopAppBar() {
 }
 
 @Composable
-fun HomeScreenFloatingActionButton() {
+fun HomeScreenFloatingActionButton(
+    onFabClicked: () -> Unit
+) {
     FloatingActionButton(
         backgroundColor = AnkiBlue200,
         contentColor = White.copy(alpha = 0.95f),
-        onClick = { /*TODO*/ }) {
+        onClick = onFabClicked
+    ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_plus_outline),
             contentDescription = "add"
@@ -88,7 +105,8 @@ fun HomeScreenFloatingActionButton() {
 fun HomeScreenContent(
     schemas: List<Schema>,
     deckCount: Int,
-    dictCount: Int
+    dictCount: Int,
+    onEditSchemaClicked: (Schema) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -102,7 +120,8 @@ fun HomeScreenContent(
             )
             Spacer(modifier = Modifier.height(Dimension.small))
             SchemaSection(
-                schemas = schemas
+                schemas = schemas,
+                onEditSchemaClicked = onEditSchemaClicked
             )
         }
     }
@@ -155,7 +174,8 @@ fun OverviewSection(
 
 @Composable
 fun SchemaSection(
-    schemas: List<Schema>
+    schemas: List<Schema>,
+    onEditSchemaClicked: (Schema) -> Unit
 ) {
     Column {
         Text(text = "Your Schemas", color = Night, fontSize = 22.sp, fontFamily = fontOutfit)
@@ -167,7 +187,7 @@ fun SchemaSection(
                 SchemaItem(
                     name = it.name,
                     deckName = it.deck,
-                    onButtonClick = { /* TODO */ }
+                    onButtonClick = { onEditSchemaClicked(it) }
                 )
             }
         }

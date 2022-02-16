@@ -7,7 +7,7 @@ import one.tunkshif.ankiestrella.ui.composable.AutoCompleteTextFieldState
 import one.tunkshif.ankiestrella.ui.composable.TextFieldState
 import one.tunkshif.ankiestrella.util.AnkiDroidHelper
 
-class EditorFormState(schema: Schema? = null) {
+class EditorFormState {
     var schemaId by mutableStateOf(0)
     val schemaName = TextFieldState()
     val deckName = AutoCompleteTextFieldState()
@@ -36,15 +36,6 @@ class EditorFormState(schema: Schema? = null) {
         deckName.onItemsChange(decks)
         sourceName.onItemsChange(sources)
         modelName.onItemsChange(models)
-
-        schema?.let {
-            schemaName.text = it.name
-            deckName.selected = it.deck
-            sourceName.selected = SourceRegistry.getById(it.source)?.name ?: ""
-            modelName.selected = it.model
-            fieldMapping.clear()
-            fieldMapping.putAll(it.fieldMapping)
-        }
     }
 
     fun onDeckSelected(name: String) {

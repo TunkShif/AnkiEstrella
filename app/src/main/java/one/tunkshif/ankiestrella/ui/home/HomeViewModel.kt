@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.data.SourceRegistry
+import one.tunkshif.ankiestrella.data.model.Schema
 import one.tunkshif.ankiestrella.data.repository.SchemaRepository
+import one.tunkshif.ankiestrella.ui.destinations.EditorScreenDestination
+import one.tunkshif.ankiestrella.ui.navigation.NavEvent
 import one.tunkshif.ankiestrella.util.AnkiDroidHelper
 
 class HomeViewModel(
@@ -16,6 +19,9 @@ class HomeViewModel(
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loaded())
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    private val _navigateTo = MutableStateFlow<NavEvent?>(null)
+    val navigateTo: StateFlow<NavEvent?> = _navigateTo
 
     init {
         viewModelScope.launch {
@@ -29,5 +35,13 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    fun onFabClicked() {
+        _navigateTo.value = NavEvent(EditorScreenDestination())
+    }
+
+    fun onEditSchemaClicked(schema: Schema) {
+        _navigateTo.value = NavEvent(EditorScreenDestination(schema = schema))
     }
 }
