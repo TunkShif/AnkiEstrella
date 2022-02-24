@@ -11,8 +11,7 @@ import one.tunkshif.ankiestrella.data.repository.SchemaRepository
 class EditorViewModel(
     private val schemaRepository: SchemaRepository
 ) : ViewModel() {
-    var formState = EditorFormState()
-        private set
+    val formState = EditorFormState()
 
     suspend fun hasConflict(): Boolean {
         var hasConflict = false

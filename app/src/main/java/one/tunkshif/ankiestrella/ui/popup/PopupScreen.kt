@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,6 +15,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.R
 import one.tunkshif.ankiestrella.ui.theme.*
 
@@ -129,9 +135,68 @@ fun MainSection() {
             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
             .background(color = White)
             .fillMaxSize()
-            .padding(Dimension.extraSmall)
     ) {
-        // TODO: Tab Layout
+        TabLayout(
+            tabItems = listOf(
+                "Abaced",
+                "Benchee", "Cade", "sch", "casdjh"
+            )
+        ) {
+            Text(text = "Hello")
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun TabLayout(
+    tabItems: List<String>,
+    content: @Composable () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+    Column {
+        ScrollableTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            edgePadding = 0.dp,
+            backgroundColor = MaterialTheme.colors.background,
+            contentColor = AnkiBlue100,
+            indicator = { tabPositions ->
+                Box(
+                    modifier = Modifier
+                        .pagerTabIndicatorOffset(pagerState, tabPositions)
+                        .height(4.dp)
+                        .padding(horizontal = 28.dp)
+                        .background(color = AnkiBlue100, shape = Rounded.large)
+                )
+            },
+            divider = {},
+        ) {
+            tabItems.forEachIndexed { index, item ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    },
+                    selectedContentColor = AnkiBlue100,
+                    unselectedContentColor = Gray200,
+                    text = {
+                        Text(text = item, fontFamily = fontOutfit, fontSize = 18.sp)
+                    }
+                )
+            }
+        }
+        Divider(
+            color = Gray50,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        )
+        HorizontalPager(count = tabItems.count(), state = pagerState) {
+            content()
+        }
     }
 }
 
