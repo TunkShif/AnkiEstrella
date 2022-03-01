@@ -7,4 +7,5 @@ object Rounded {
     val small = RoundedCornerShape(2.dp)
     val medium = RoundedCornerShape(4.dp)
     val large = RoundedCornerShape(8.dp)
+    val full = RoundedCornerShape(16.dp)
 }

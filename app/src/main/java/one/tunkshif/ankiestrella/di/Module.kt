@@ -1,6 +1,8 @@
 package one.tunkshif.ankiestrella.di
 
 import androidx.room.Room
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import one.tunkshif.ankiestrella.AnkiEstrella
 import one.tunkshif.ankiestrella.data.AppDatabase
 import one.tunkshif.ankiestrella.data.repository.SchemaRepository
@@ -33,7 +35,7 @@ val serviceModule = module {
     fun provideHttpClient() =
         Retrofit.Builder()
             .baseUrl("https://dictlet.herokuapp.com/")
-            .addConverterFactory(JacksonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create(ObjectMapper().registerKotlinModule()))
             .build()
 
     single { provideHttpClient() }

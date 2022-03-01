@@ -2,6 +2,7 @@ package one.tunkshif.ankiestrella.data.source
 
 import androidx.compose.runtime.Composable
 import one.tunkshif.ankiestrella.api.DictSource
+import one.tunkshif.ankiestrella.data.model.Definition
 import one.tunkshif.ankiestrella.data.model.Field
 import one.tunkshif.ankiestrella.data.model.Field.*
 import one.tunkshif.ankiestrella.data.model.Word
@@ -17,7 +18,7 @@ object YoudaoCollins : DictSource {
     }
 
     @Composable
-    override fun Item(item: Word, onClick: () -> Unit) {
+    override fun Item(definition: Definition, onClick: () -> Unit) {
         TODO("Not yet implemented")
     }
 }

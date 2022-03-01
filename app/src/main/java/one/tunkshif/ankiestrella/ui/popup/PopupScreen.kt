@@ -1,13 +1,15 @@
 package one.tunkshif.ankiestrella.ui.popup
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +23,10 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import one.tunkshif.ankiestrella.R
+import one.tunkshif.ankiestrella.data.model.Word
+import one.tunkshif.ankiestrella.data.source.SpanishDict
 import one.tunkshif.ankiestrella.ui.theme.*
+import one.tunkshif.ankiestrella.util.TAG
 
 @Composable
 fun PopupScreen() {
@@ -51,6 +56,7 @@ fun PopupScreen() {
             )
         },
         floatingActionButton = {
+            // TODO: hide fab when scrolling
             FloatingActionButton(
                 backgroundColor = AnkiBlue200,
                 contentColor = White.copy(alpha = 0.95f),
@@ -129,6 +135,7 @@ fun ActionButton(
 
 @Composable
 fun MainSection() {
+    val tabs = remember { listOf("Ada", "Ben", "Caesar", "Dash")}
     Box(
         modifier = Modifier
             .padding(horizontal = Dimension.extraSmall)
@@ -137,12 +144,9 @@ fun MainSection() {
             .fillMaxSize()
     ) {
         TabLayout(
-            tabItems = listOf(
-                "Abaced",
-                "Benchee", "Cade", "sch", "casdjh"
-            )
+            tabItems = tabs
         ) {
-            Text(text = "Hello")
+            DefinitionList(it)
         }
     }
 }
@@ -151,11 +155,11 @@ fun MainSection() {
 @Composable
 fun TabLayout(
     tabItems: List<String>,
-    content: @Composable () -> Unit
+    content: @Composable (index: Int) -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
     Column {
+        val scope = rememberCoroutineScope()
+        val pagerState = rememberPagerState(initialPage = 0)
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             edgePadding = 0.dp,
@@ -176,7 +180,7 @@ fun TabLayout(
                 Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
-                        coroutineScope.launch {
+                        scope.launch {
                             pagerState.scrollToPage(index)
                         }
                     },
@@ -194,8 +198,42 @@ fun TabLayout(
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)
         )
-        HorizontalPager(count = tabItems.count(), state = pagerState) {
-            content()
+        HorizontalPager(
+            count = tabItems.size,
+            state = pagerState,
+        ) { page ->
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = Dimension.extraSmall,
+                        end = Dimension.extraSmall,
+                        top = Dimension.tiny
+                    )
+            ) {
+                content(page)
+            }
+        }
+    }
+}
+
+@Composable
+fun DefinitionList(id: Int) {
+    // TODO: temporary test
+    var word: Word? by remember { mutableStateOf(null) }
+    val words = listOf("nieve", "llevar", "seguir", "comer", "manzana")
+    LaunchedEffect(id) {
+        if (word == null) {
+            Log.d(TAG, "Defs: launched effect $id")
+            word = SpanishDict.query(words[id])
+        }
+    }
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        word?.definitions?.let {
+            items(it) { definition ->
+                SpanishDict.Item(definition = definition, onClick = {})
+                Divider(color = Gray50, modifier = Modifier.padding(top = 6.dp))
+            }
         }
     }
 }

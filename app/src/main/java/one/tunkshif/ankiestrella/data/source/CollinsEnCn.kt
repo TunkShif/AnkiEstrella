@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import one.tunkshif.ankiestrella.AnkiEstrella
 import one.tunkshif.ankiestrella.api.DictSource
 import one.tunkshif.ankiestrella.data.DictDbHelper
+import one.tunkshif.ankiestrella.data.model.Definition
 import one.tunkshif.ankiestrella.data.model.Field
 import one.tunkshif.ankiestrella.data.model.Field.*
 import one.tunkshif.ankiestrella.data.model.Word
@@ -31,7 +32,7 @@ object CollinsEnCn : DictSource {
     }
 
     @Composable
-    override fun Item(item: Word, onClick: () -> Unit) {
+    override fun Item(definition: Definition, onClick: () -> Unit) {
         TODO("Not yet implemented")
     }
 }
