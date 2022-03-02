@@ -10,6 +10,7 @@ import one.tunkshif.ankiestrella.data.service.SpanishDictService
 import one.tunkshif.ankiestrella.data.service.YoudaoCollinsService
 import one.tunkshif.ankiestrella.ui.home.HomeViewModel
 import one.tunkshif.ankiestrella.ui.editor.EditorViewModel
+import one.tunkshif.ankiestrella.ui.query.QueryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -18,6 +19,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 val appModule = module {
     viewModel { EditorViewModel(get()) }
     viewModel { HomeViewModel(get()) }
+    viewModel { parameters -> QueryViewModel(query = parameters.get(), get()) }
 }
 
 val dbModule = module {
